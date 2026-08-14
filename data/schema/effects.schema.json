@@ -1,0 +1,1434 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://pokeca.local/schema/effects.json",
+  "title": "ポケカ エクストラ 対戦卓 — 効果DSL",
+  "description": "カード定義の effects（Op[]）を検証する。第3段階 §3.1 のオペコードに対応する。",
+  "$ref": "#/$defs/OpList",
+  "$defs": {
+    "PlayerRef": {
+      "enum": [
+        "self",
+        "opponent",
+        "both"
+      ]
+    },
+    "Zone": {
+      "enum": [
+        "deck",
+        "hand",
+        "active",
+        "bench",
+        "prize",
+        "discard",
+        "lost",
+        "stadium"
+      ]
+    },
+    "EnergyType": {
+      "enum": [
+        "grass",
+        "fire",
+        "water",
+        "lightning",
+        "psychic",
+        "fighting",
+        "darkness",
+        "metal",
+        "fairy",
+        "dragon",
+        "colorless"
+      ]
+    },
+    "Stage": {
+      "enum": [
+        "basic",
+        "stage1",
+        "stage2",
+        "mega",
+        "break",
+        "vmax",
+        "vstar",
+        "vunion",
+        "restored"
+      ]
+    },
+    "RuleBox": {
+      "enum": [
+        "EX",
+        "MEGA",
+        "BREAK",
+        "GX",
+        "PRISM",
+        "TAGTEAM",
+        "V",
+        "VMAX",
+        "VUNION",
+        "VSTAR",
+        "RADIANT",
+        "ex"
+      ]
+    },
+    "TrainerKind": {
+      "enum": [
+        "item",
+        "tool",
+        "supporter",
+        "stadium"
+      ]
+    },
+    "SpecialCondition": {
+      "enum": [
+        "poisoned",
+        "burned",
+        "asleep",
+        "paralyzed",
+        "confused"
+      ]
+    },
+    "Compare": {
+      "enum": [
+        "eq",
+        "ne",
+        "lt",
+        "lte",
+        "gt",
+        "gte"
+      ]
+    },
+    "ExpiryCondition": {
+      "enum": [
+        "targetLeavesPlay",
+        "targetReturnsToBench",
+        "targetEvolves",
+        "targetDevolves",
+        "sourceLeavesPlay"
+      ]
+    },
+    "CountValue": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "type": "object",
+          "properties": {
+            "binding": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "binding"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "from": {
+              "$ref": "#/$defs/CountSource"
+            }
+          },
+          "required": [
+            "from"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "CountOrAll": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 0
+        },
+        {
+          "const": "all"
+        }
+      ]
+    },
+    "CardFilter": {
+      "type": "object",
+      "properties": {
+        "anyOf": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CardFilter"
+          }
+        },
+        "supertype": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "pokemon",
+              "trainer",
+              "energy"
+            ]
+          }
+        },
+        "stage": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Stage"
+          }
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EnergyType"
+          }
+        },
+        "typesNot": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EnergyType"
+          }
+        },
+        "ruleBox": {
+          "oneOf": [
+            {
+              "const": "any"
+            },
+            {
+              "const": "none"
+            },
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/RuleBox"
+              }
+            }
+          ]
+        },
+        "ruleBoxNot": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/RuleBox"
+          }
+        },
+        "nameExact": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nameNotExact": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nameContains": {
+          "type": "string"
+        },
+        "hpMax": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "isBasicEnergy": {
+          "type": "boolean"
+        },
+        "energyProvides": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EnergyType"
+          }
+        },
+        "hasAbilities": {
+          "type": "boolean"
+        },
+        "trainerKind": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TrainerKind"
+          }
+        },
+        "tag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "SlotFilter": {
+      "type": "object",
+      "properties": {
+        "where": {
+          "enum": [
+            "active",
+            "bench"
+          ]
+        },
+        "card": {
+          "$ref": "#/$defs/CardFilter"
+        },
+        "hasDamage": {
+          "type": "boolean"
+        },
+        "hasEnergy": {
+          "type": "boolean"
+        },
+        "hasTool": {
+          "type": "boolean"
+        },
+        "hasCondition": {
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "additionalProperties": false
+    },
+    "SlotRef": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "active"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            }
+          },
+          "required": [
+            "kind",
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "bench"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "index": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "self"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "choose"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/SlotFilter"
+            }
+          },
+          "required": [
+            "kind",
+            "player",
+            "chooser"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "binding"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind"
+      }
+    },
+    "CountSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "zone"
+            },
+            "zone": {
+              "$ref": "#/$defs/Zone"
+            },
+            "owner": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            }
+          },
+          "required": [
+            "source",
+            "zone",
+            "owner"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "prizes"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            }
+          },
+          "required": [
+            "source",
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "bench"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            }
+          },
+          "required": [
+            "source",
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "inPlay"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            }
+          },
+          "required": [
+            "source",
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "damageCounters"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            }
+          },
+          "required": [
+            "source",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "attachedEnergy"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            }
+          },
+          "required": [
+            "source",
+            "target"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "source": {
+              "const": "binding"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "source",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "discriminator": {
+        "propertyName": "source"
+      }
+    },
+    "Condition": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "coin"
+            },
+            "binding": {
+              "type": "string"
+            },
+            "face": {
+              "enum": [
+                "heads",
+                "tails"
+              ]
+            },
+            "atLeast": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "binding",
+            "face"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "count"
+            },
+            "of": {
+              "$ref": "#/$defs/CountSource"
+            },
+            "compare": {
+              "$ref": "#/$defs/Compare"
+            },
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "of",
+            "compare",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "exists"
+            },
+            "slot": {
+              "$ref": "#/$defs/SlotRef"
+            }
+          },
+          "required": [
+            "kind",
+            "slot"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "playersTurn"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "compare": {
+              "$ref": "#/$defs/Compare"
+            },
+            "value": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "kind",
+            "player",
+            "compare",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "knockedOutLastOpponentTurn"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            }
+          },
+          "required": [
+            "kind",
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "option"
+            },
+            "binding": {
+              "type": "string"
+            },
+            "equals": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "binding",
+            "equals"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "not"
+            },
+            "of": {
+              "$ref": "#/$defs/Condition"
+            }
+          },
+          "required": [
+            "kind",
+            "of"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "and"
+            },
+            "of": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Condition"
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "of"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "or"
+            },
+            "of": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Condition"
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "of"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "discriminator": {
+        "propertyName": "kind"
+      }
+    },
+    "EffectDuration": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "enum": [
+            "thisTurn",
+            "untilEndOfNextOpponentTurn",
+            "untilEndOfNextOwnTurn",
+            "whileSourceInPlay",
+            "wholeGame"
+          ]
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "EffectTargetTemplate": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "slot": {
+              "$ref": "#/$defs/SlotRef"
+            }
+          },
+          "required": [
+            "slot"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            }
+          },
+          "required": [
+            "player"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "global": {
+              "const": true
+            }
+          },
+          "required": [
+            "global"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "ActiveEffectTemplate": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/EffectTargetTemplate"
+        },
+        "applyAt": {
+          "enum": [
+            "step2",
+            "step5",
+            "none"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "damageModifier",
+            "preventAttackDamage",
+            "preventAttackEffect",
+            "cannotRetreat",
+            "cannotUseAttack",
+            "lockCardKind",
+            "extraAttack",
+            "temporaryTool",
+            "extraPrize",
+            "custom"
+          ]
+        },
+        "payload": {
+          "type": "object"
+        },
+        "duration": {
+          "$ref": "#/$defs/EffectDuration"
+        },
+        "expiresOn": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ExpiryCondition"
+          }
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "target",
+        "applyAt",
+        "kind",
+        "duration"
+      ],
+      "additionalProperties": false
+    },
+    "Op": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "draw"
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "count": {
+              "$ref": "#/$defs/CountValue"
+            },
+            "upToHandSize": {
+              "$ref": "#/$defs/CountValue"
+            }
+          },
+          "required": [
+            "op",
+            "player",
+            "count"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "search"
+            },
+            "from": {
+              "$ref": "#/$defs/Zone"
+            },
+            "owner": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            },
+            "slotFilter": {
+              "$ref": "#/$defs/SlotFilter"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "upTo": {
+              "type": "boolean"
+            },
+            "dest": {
+              "$ref": "#/$defs/Zone"
+            },
+            "destSlot": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "reveal": {
+              "type": "boolean"
+            },
+            "thenShuffle": {
+              "type": "boolean"
+            },
+            "lookAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "bind": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "from",
+            "owner",
+            "filter",
+            "count",
+            "upTo",
+            "dest",
+            "chooser",
+            "reveal",
+            "thenShuffle"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "attachEnergy"
+            },
+            "from": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Zone"
+                },
+                {
+                  "const": "inPlay"
+                }
+              ]
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "upTo": {
+              "type": "boolean"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "distribution": {
+              "enum": [
+                "free",
+                "single"
+              ]
+            },
+            "lookAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "thenShuffle": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "op",
+            "from",
+            "filter",
+            "count",
+            "upTo",
+            "target",
+            "distribution"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "moveCard"
+            },
+            "from": {
+              "oneOf": [
+                {
+                  "$ref": "#/$defs/Zone"
+                },
+                {
+                  "const": "inPlay"
+                },
+                {
+                  "const": "field"
+                }
+              ]
+            },
+            "to": {
+              "$ref": "#/$defs/Zone"
+            },
+            "owner": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            },
+            "slotFilter": {
+              "$ref": "#/$defs/SlotFilter"
+            },
+            "count": {
+              "$ref": "#/$defs/CountOrAll"
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "position": {
+              "enum": [
+                "top",
+                "bottom"
+              ]
+            },
+            "includeAttached": {
+              "type": "boolean"
+            },
+            "upTo": {
+              "type": "boolean"
+            },
+            "bind": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "from",
+            "to",
+            "owner",
+            "count",
+            "chooser"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "discard"
+            },
+            "from": {
+              "$ref": "#/$defs/Zone"
+            },
+            "owner": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            },
+            "count": {
+              "$ref": "#/$defs/CountOrAll"
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "upTo": {
+              "type": "boolean"
+            },
+            "optional": {
+              "type": "boolean"
+            },
+            "lookAt": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "bind": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "from",
+            "owner",
+            "count",
+            "chooser"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "evolve"
+            },
+            "from": {
+              "enum": [
+                "deck",
+                "hand"
+              ]
+            },
+            "player": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            },
+            "skipStage1": {
+              "type": "boolean"
+            },
+            "thenShuffle": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "op",
+            "from",
+            "player",
+            "target",
+            "chooser",
+            "thenShuffle"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "switch"
+            },
+            "side": {
+              "enum": [
+                "own",
+                "opponent"
+              ]
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            }
+          },
+          "required": [
+            "op",
+            "side",
+            "chooser"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "damageCounter"
+            },
+            "action": {
+              "enum": [
+                "place",
+                "remove",
+                "move"
+              ]
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "from": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "distribution": {
+              "enum": [
+                "free",
+                "single"
+              ]
+            }
+          },
+          "required": [
+            "op",
+            "action",
+            "count",
+            "target",
+            "distribution"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "heal"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "amount": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "const": "all"
+                }
+              ]
+            }
+          },
+          "required": [
+            "op",
+            "target",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "coinFlip"
+            },
+            "count": {
+              "oneOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "const": "untilTails"
+                }
+              ]
+            },
+            "bind": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "count",
+            "bind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "chooseOption"
+            },
+            "chooser": {
+              "$ref": "#/$defs/PlayerRef"
+            },
+            "bind": {
+              "type": "string"
+            },
+            "options": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "label"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "op",
+            "chooser",
+            "bind",
+            "options"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "clearEffects"
+            },
+            "source": {
+              "enum": [
+                "attack",
+                "all"
+              ]
+            }
+          },
+          "required": [
+            "op",
+            "source"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "setCondition"
+            },
+            "target": {
+              "$ref": "#/$defs/SlotRef"
+            },
+            "condition": {
+              "$ref": "#/$defs/SpecialCondition"
+            },
+            "counterOverride": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "op",
+            "target",
+            "condition"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "applyEffect"
+            },
+            "effect": {
+              "$ref": "#/$defs/ActiveEffectTemplate"
+            }
+          },
+          "required": [
+            "op",
+            "effect"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "useAttackAs"
+            },
+            "from": {
+              "enum": [
+                "opponentActive",
+                "ownTrash",
+                "ownBench",
+                "anyInPlay"
+              ]
+            },
+            "filter": {
+              "$ref": "#/$defs/CardFilter"
+            },
+            "requireEnergy": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "op",
+            "from",
+            "requireEnergy"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "shuffle"
+            },
+            "zone": {
+              "$ref": "#/$defs/Zone"
+            },
+            "owner": {
+              "$ref": "#/$defs/PlayerRef"
+            }
+          },
+          "required": [
+            "op",
+            "zone",
+            "owner"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "if"
+            },
+            "cond": {
+              "$ref": "#/$defs/Condition"
+            },
+            "then": {
+              "$ref": "#/$defs/OpList"
+            },
+            "else": {
+              "$ref": "#/$defs/OpList"
+            }
+          },
+          "required": [
+            "op",
+            "cond",
+            "then"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "repeat"
+            },
+            "times": {
+              "$ref": "#/$defs/CountValue"
+            },
+            "body": {
+              "$ref": "#/$defs/OpList"
+            }
+          },
+          "required": [
+            "op",
+            "times",
+            "body"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "const": "manual"
+            },
+            "prompt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "op",
+            "prompt"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "discriminator": {
+        "propertyName": "op"
+      }
+    },
+    "OpList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/Op"
+      }
+    }
+  }
+}

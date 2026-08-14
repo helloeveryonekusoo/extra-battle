@@ -1,0 +1,232 @@
+/* アカウント（T46） */
+.shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+}
+
+.panel {
+  display: grid;
+  gap: 12px;
+  width: min(560px, 100%);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+}
+
+.title {
+  margin: 0;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.lead {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.empty {
+  margin: 0;
+  padding: 20px;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 13px;
+  text-align: center;
+}
+
+.summary {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-hi);
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: var(--text);
+}
+
+.total b {
+  font-size: 28px;
+}
+
+.total span {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.kinds {
+  display: flex;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kinds li {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 12px;
+}
+
+.kindLabel {
+  color: var(--text-dim);
+}
+
+.kindCount {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.updated {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sources li {
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.button {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-hi);
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.primary {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--panel) 80%, var(--accent));
+}
+
+.link {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 12px;
+}
+
+.hidden {
+  display: none;
+}
+
+.notice {
+  margin: 0;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.error {
+  margin: 0;
+  color: var(--danger, #d4553d);
+  font-size: 12px;
+  white-space: pre-wrap;
+}
+
+.hint {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+/* ── アカウント固有 ─────────────────── */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tabActive {
+  border-color: var(--accent);
+  background: var(--panel-hi);
+  color: var(--text);
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.label {
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.input {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel-hi);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.card {
+  display: grid;
+  gap: 2px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-hi);
+}
+
+.who {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.mail {
+  color: var(--text-dim);
+  font-size: 11px;
+}

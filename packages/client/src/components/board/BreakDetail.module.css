@@ -1,0 +1,54 @@
+/* BREAK進化の内訳（§4.3）。盤面のカードの下に小さく敷く */
+.panel {
+  margin-top: 4px;
+  padding: 5px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--panel-hi);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.head {
+  margin: 0 0 3px;
+  color: var(--text);
+  font-size: 9px;
+}
+
+.over {
+  color: var(--text-dim);
+  margin: 0 2px;
+}
+
+.rows {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 4px;
+  align-items: baseline;
+}
+
+.label {
+  color: var(--text-dim);
+}
+
+.value {
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ★どちらのカード由来かを必ず出す */
+.from {
+  color: var(--accent);
+  font-size: 8px;
+  white-space: nowrap;
+}

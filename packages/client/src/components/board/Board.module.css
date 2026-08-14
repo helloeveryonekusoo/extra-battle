@@ -1,0 +1,285 @@
+.shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  height: 100%;
+  min-height: 0;
+}
+
+.play {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px 12px 0;
+  gap: 8px;
+  overflow: hidden;
+}
+
+/*
+ * 現在の手番を画面全体の縁の色で示す（§6.5）。
+ * 自分の番はアクセント色の枠が光る。
+ */
+.play::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  pointer-events: none;
+  transition: border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+
+.myTurn::after {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 22px rgba(74, 144, 217, 0.16);
+}
+
+.theirTurn::after {
+  border-color: var(--border);
+}
+
+/* ── 場 ─────────────────────────── */
+
+.field {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* ★ベンチの空き数（§4.1）。上限が可変なので数字で出す */
+.benchCount {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1px;
+  padding: 0 6px;
+  color: var(--text-dim);
+  font-size: 10px;
+  cursor: help;
+}
+
+.benchFree {
+  color: var(--text);
+  font-size: 9px;
+}
+
+.activeRow {
+  display: flex;
+  justify-content: center;
+  padding: 2px 0;
+}
+
+/* バトル場は一回り大きく見せる */
+.activeSlot {
+  transform: scale(1.14);
+  transform-origin: center;
+  margin: 8px 0;
+}
+
+.benchLabel {
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-align: center;
+}
+
+/* ── スタジアム ───────────────────── */
+
+.stadiumBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 2px 0;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+.stadiumLine {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.stadiumCard {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 11px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 11px;
+  letter-spacing: normal;
+}
+
+.stadiumDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--trainer);
+}
+
+.stadiumEmpty {
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+}
+
+/* ── スロット ─────────────────────── */
+
+.slot {
+  position: relative;
+}
+
+.notes {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: -2px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropOver {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.35);
+}
+
+/* 直近の操作を 1.5秒だけ光らせる（§6.8） */
+.recent {
+  animation: recent-flash 1.5s var(--ease);
+}
+
+@keyframes recent-flash {
+  0%,
+  70% {
+    box-shadow:
+      0 0 0 2px var(--accent),
+      0 0 14px rgba(74, 144, 217, 0.5);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 144, 217, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recent {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+}
+
+.dropActive {
+  border: 1px dashed var(--accent);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* ── 卓の操作バー ─────────────────── */
+
+.toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 6px 2px 8px;
+}
+
+.toolButton {
+  padding: 5px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.toolButton:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.toolButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── タブ（スマホ縦持ち §6.9） ──────────── */
+
+.tabs {
+  display: none;
+  gap: 6px;
+  padding: 8px 12px 0;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tabActive {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ── レスポンシブ ─────────────────── */
+
+/* タブレット横向き */
+@media (max-width: 1279px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+  .activeSlot {
+    transform: scale(1.06);
+  }
+}
+
+/* 細い画面: ログを下に回す */
+@media (max-width: 1023px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 180px;
+  }
+}
+
+/* スマホ縦持ち: 相手盤面 / 自分盤面 / 手札 をタブ切り替え */
+@media (max-width: 719px) {
+  .tabs {
+    display: flex;
+  }
+  .shell {
+    grid-template-rows: minmax(0, 1fr) 150px;
+  }
+  .activeSlot {
+    transform: none;
+    margin: 4px 0;
+  }
+  .hideOnMobile {
+    display: none;
+  }
+}

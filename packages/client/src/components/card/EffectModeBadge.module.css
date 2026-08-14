@@ -1,0 +1,37 @@
+.badge {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 15px;
+  padding: 1px 5px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.auto {
+  color: #64c987;
+}
+
+.assisted {
+  color: #e5b959;
+}
+
+.manual {
+  color: var(--text-dim);
+}
+
+.compact {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 4px;
+  min-height: 13px;
+  padding: 1px 4px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  font-size: 7px;
+}

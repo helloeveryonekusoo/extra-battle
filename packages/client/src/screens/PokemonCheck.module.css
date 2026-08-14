@@ -1,0 +1,263 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 10, 14, 0.74);
+}
+
+.panel {
+  width: min(560px, 100%);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.62);
+}
+
+.head {
+  padding: 16px 20px 13px;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+
+.lead {
+  margin: 6px 0 0;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.75;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: 6px 0;
+  overflow-y: auto;
+}
+
+/* ── 各段（どく → やけど → ねむり → マヒ） ── */
+
+.section {
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 8px;
+}
+
+.index {
+  width: 19px;
+  height: 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sectionName {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.poisoned {
+  background: var(--poison);
+}
+
+.burned {
+  background: var(--burn);
+}
+
+.asleep,
+.paralyzed {
+  background: var(--text-dim);
+}
+
+.rule {
+  margin-left: auto;
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.none {
+  padding-left: 28px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* ── 対象1匹ぶんの行 ─────────────── */
+
+.entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 28px;
+  padding: 7px 0;
+}
+
+.entryDone {
+  opacity: 0.45;
+}
+
+.owner {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--panel-hi);
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.ownerMine {
+  background: rgba(74, 144, 217, 0.2);
+  color: var(--accent);
+}
+
+.pokemon {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.where {
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.counter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 5px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.mini {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: var(--panel-hi);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.result {
+  color: var(--text-dim);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.action {
+  padding: 4px 11px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.action:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.action:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.primaryAction {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d1520;
+  font-weight: 600;
+}
+
+.check {
+  flex: none;
+  width: 18px;
+  color: var(--hp-high);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ── 足元 ─────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 20px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.footNote {
+  flex: 1;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.button {
+  padding: 9px 18px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.button:hover {
+  border-color: var(--accent);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d1520;
+  font-weight: 600;
+}

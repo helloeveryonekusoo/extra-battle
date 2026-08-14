@@ -1,0 +1,125 @@
+/* ── ポケモンに重ねるバッジ ───────────── */
+
+.badges {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 15px;
+  padding: 0 4px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: 0;
+  color: #10151d;
+  pointer-events: auto;
+  cursor: default;
+}
+
+button.badge {
+  cursor: pointer;
+}
+
+button.badge:hover {
+  filter: brightness(1.15);
+}
+
+/* 種類ごとの色分け */
+.damage {
+  background: #e0705f;
+}
+
+.prevent {
+  background: #6fb3e0;
+}
+
+.block {
+  background: #c9a227;
+}
+
+.prize {
+  background: #d7b45a;
+}
+
+.custom {
+  background: #9aa4b2;
+}
+
+/* 特性が止まっている（派生状態。T27） */
+.locked {
+  background: #7a5ea8;
+  color: #f2eef8;
+}
+
+/* ── 盤面上部のバー（全体・プレイヤー単位） ── */
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px 8px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.barItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 4px 3px 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid #d7b45a;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.barScope {
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.barLabel {
+  font-weight: 600;
+}
+
+.barDuration {
+  color: var(--text-dim);
+  font-size: 9px;
+}
+
+.barRemove {
+  width: 17px;
+  height: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.barRemove:hover {
+  border-color: var(--damage, #d8544c);
+  color: var(--damage, #d8544c);
+}

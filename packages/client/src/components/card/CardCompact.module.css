@@ -1,0 +1,346 @@
+.wrap {
+  /* 回転しても隣とぶつからないよう、回転用の余白を確保する */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 132px;
+}
+
+.card {
+  /*
+   * ★タブレット（iPad）で指のドラッグを成立させる（T43 の実運用対応）。
+   *   touch-action を切らないと、Safari が先にスクロールとして解釈して
+   *   pointercancel が飛び、ドラッグが始まらない。
+   *   長押しメニューも、iOS の選択・コールアウトを止めないと出せない。
+   */
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  position: relative;
+  display: flex;
+  width: 100px;
+  min-height: 118px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  transform-origin: center;
+}
+
+.ace {
+  border-color: var(--ace);
+}
+
+.stripe {
+  width: 4px;
+  flex: none;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 6px 5px;
+}
+
+.name {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.stackHint {
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+}
+
+.energy {
+  min-height: 9px;
+}
+
+/* ── HPバー ───────────────────────── */
+
+.hpBlock {
+  margin-top: auto;
+}
+
+.hpClickable {
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 2px 2px 0;
+  margin-left: -2px;
+  margin-right: -2px;
+  transition: background 0.15s var(--ease);
+}
+
+.hpClickable:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ドロップ先のハイライト */
+.dropActive {
+  border-color: var(--accent);
+  border-style: dashed;
+}
+
+.dropOver {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: 0 0 0 2px rgba(74, 144, 217, 0.35);
+  background: rgba(74, 144, 217, 0.12);
+}
+
+.hpBar {
+  display: flex;
+  gap: 1.5px;
+  height: 7px;
+}
+
+.tick {
+  flex: 1;
+  border-radius: 1px;
+  background: var(--panel-hi);
+  transition: background var(--dur-count) var(--ease);
+}
+
+.hpText {
+  margin-top: 2px;
+  text-align: right;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+}
+
+.hpTextLow {
+  color: var(--hp-low);
+  font-weight: 600;
+}
+
+/* ── どうぐ ───────────────────────── */
+
+.tool {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-dim);
+  font-size: 9px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ── 特性の状態（§4.1 / T42） ───────────── */
+
+.abilities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.ability {
+  padding: 0 3px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--panel) 70%, var(--accent));
+  color: var(--text);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+/* ★止まっている特性。消さずに、見て分かる形で残す */
+.abilityLocked {
+  background: transparent;
+  color: var(--text-dim);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* ★ロックが複数あって自動判定を信用しないとき（§2.1） */
+.abilityAssisted {
+  border: 1px dashed var(--danger, #d4553d);
+}
+
+/* ── 特殊状態 ─────────────────────── */
+
+.conditions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.condition {
+  padding: 0 4px 1px;
+  border-radius: 3px;
+  border: 1px solid currentColor;
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.poisoned {
+  color: var(--poison);
+}
+
+.burned {
+  color: var(--burn);
+}
+
+.asleep,
+.paralyzed,
+.confused {
+  color: var(--text-dim);
+}
+
+/* どく・やけどは縁が脈動する（§6.4） */
+.pulsePoison {
+  animation: pulse-poison 1.8s ease-in-out infinite;
+}
+
+.pulseBurn {
+  animation: pulse-burn 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse-poison {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(168, 92, 184, 0);
+    border-color: var(--poison);
+  }
+  50% {
+    box-shadow: 0 0 7px 1px rgba(168, 92, 184, 0.55);
+    border-color: var(--poison);
+  }
+}
+
+@keyframes pulse-burn {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 53, 0);
+    border-color: var(--burn);
+  }
+  50% {
+    box-shadow: 0 0 7px 1px rgba(255, 107, 53, 0.55);
+    border-color: var(--burn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulsePoison,
+  .pulseBurn {
+    animation: none;
+    box-shadow: 0 0 6px 1px currentColor;
+  }
+}
+
+/* ── 空きスロット・伏せ ───────────────── */
+
+.empty {
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.faceDown {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--panel) 0 5px,
+    var(--panel-hi) 5px 10px
+  );
+}
+
+.faceDownLabel {
+  margin: auto;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+}
+
+/* ── 対戦中1回のバッジ（T36） ──────────────
+   ★点灯・消灯は「持ち主が使ったかどうか」で決まる。ポケモン単位ではない */
+.once {
+  display: flex;
+  gap: 4px;
+}
+
+.onceBadge {
+  padding: 1px 6px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.onceBadgeUsed {
+  opacity: 0.3;
+  border-color: transparent;
+  background: var(--panel-hi);
+  text-decoration: line-through;
+}
+
+/* ── BREAK進化（T37 / §4.3） ────────────────
+   ★実物どおり横向きに重ねる。下のカードの名前が覗く形にする */
+.breakWrap {
+  position: relative;
+  padding-top: 14px;
+}
+
+.breakUnder {
+  position: absolute;
+  top: 0;
+  left: 6px;
+  right: 6px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel-hi);
+  /* 横向きに重なって見えるよう、わずかに傾ける */
+  transform: rotate(-1.4deg);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.breakUnderName {
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.breakUnderTag {
+  color: var(--text-dim);
+  font-size: 8px;
+  letter-spacing: 0.02em;
+}
+
+/* 上に乗るBREAK側。下の帯が見えるよう少し右へずらす */
+.breakTop {
+  position: relative;
+  transform: translateX(3px);
+}
+
+/* 持ち主が違うどうぐ（フレア団ハイパーギア等。T40） */
+.toolForeign {
+  margin-left: 4px;
+  padding: 0 4px;
+  border: 1px solid var(--warn, #c9873a);
+  border-radius: 3px;
+  color: var(--warn, #c9873a);
+  font-size: 8px;
+}

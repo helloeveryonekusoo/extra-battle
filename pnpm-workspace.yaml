@@ -1,0 +1,9 @@
+packages:
+  - 'packages/*'
+
+allowBuilds:
+  # esbuild はバイナリの取得に必要
+  esbuild: true
+  # ★Firebase SDK の postinstall は使わないので走らせない
+  '@firebase/util': false
+  protobufjs: false

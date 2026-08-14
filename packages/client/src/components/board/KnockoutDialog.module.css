@@ -1,0 +1,263 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(8, 10, 14, 0.78);
+}
+
+.panel {
+  width: min(460px, 100%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-top: 2px solid var(--damage, #d8544c);
+  border-radius: 12px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.66);
+}
+
+.head {
+  padding: 15px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.timing {
+  display: block;
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.title {
+  margin: 3px 0 0;
+  font-size: 16px;
+  letter-spacing: 0.1em;
+}
+
+/* ── きぜつしたポケモン ─────────────── */
+
+.target {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 20px 10px;
+}
+
+.owner {
+  flex: none;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--panel-hi);
+  color: var(--text-dim);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.ownerMine {
+  background: rgba(74, 144, 217, 0.2);
+  color: var(--accent);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.where,
+.ruleBox {
+  flex: none;
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.ruleBox {
+  padding: 1px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* ── HP ────────────────────────── */
+
+.hpRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 20px 14px;
+}
+
+.hpLabel {
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.hpBar {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--panel-hi);
+  overflow: hidden;
+}
+
+.hpFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--damage, #d8544c);
+}
+
+.hpText {
+  flex: none;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dim);
+}
+
+.zero {
+  margin-left: 7px;
+  color: var(--damage, #d8544c);
+}
+
+/* ── サイド枚数・送り先 ───────────── */
+
+.field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.fieldLabel {
+  flex: none;
+  width: 96px;
+  font-size: 12px;
+}
+
+.sub {
+  display: block;
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.step {
+  width: 28px;
+  height: 28px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.step:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.step:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.count {
+  width: 34px;
+  text-align: center;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.note {
+  flex: 1;
+  color: var(--text-dim);
+  font-size: 10px;
+  text-align: right;
+}
+
+.changed {
+  margin-left: 6px;
+  color: var(--accent);
+}
+
+.hint {
+  margin: 0;
+  padding: 0 20px 11px;
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.zones {
+  display: flex;
+  gap: 5px;
+}
+
+.zone {
+  padding: 5px 13px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.zone:hover {
+  border-color: var(--accent);
+}
+
+.zoneOn {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0d1520;
+  font-weight: 600;
+}
+
+/* ── 足元 ─────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 13px 20px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.footNote {
+  flex: 1;
+  color: var(--text-dim);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.button {
+  flex: none;
+  padding: 9px 16px;
+  background: var(--panel-hi);
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.button:hover {
+  border-color: var(--accent);
+}
+
+.primary {
+  background: var(--damage, #d8544c);
+  border-color: var(--damage, #d8544c);
+  color: #14090a;
+  font-weight: 600;
+}

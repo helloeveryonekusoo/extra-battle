@@ -1,0 +1,16 @@
+{
+  "format": "extra",
+  "updatedAt": "2026-08-12",
+  "groups": [
+    {
+      "id": "professor-research",
+      "names": ["アララギ博士", "プラターヌ博士", "博士の研究"],
+      "maxDistinct": 1
+    },
+    {
+      "id": "boss-orders",
+      "names": ["フラダリ", "ボスの指令"],
+      "maxDistinct": 1
+    }
+  ]
+}

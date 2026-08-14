@@ -1,0 +1,68 @@
+.stack {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  z-index: 140;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(560px, 92vw);
+  padding: 9px 15px;
+  border-radius: 8px;
+  background: var(--panel);
+  border: 1px solid var(--ace);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+  font-size: 12px;
+  animation: toast-in 0.2s var(--ease);
+}
+
+.info {
+  border-color: var(--accent);
+}
+
+.icon {
+  flex: none;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.message {
+  min-width: 0;
+}
+
+/* 同じ警告がまとまったときの件数 */
+.count {
+  flex: none;
+  padding: 0 6px 1px;
+  border-radius: 999px;
+  background: var(--panel-hi);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toast {
+    animation: none;
+  }
+}

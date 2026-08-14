@@ -1,0 +1,79 @@
+.track {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--text-dim);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.turnNumber {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.history {
+  display: flex;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.pip {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--border);
+  flex: none;
+}
+
+.pipMine {
+  background: var(--accent);
+}
+
+.pipTheirs {
+  background: var(--text-dim);
+}
+
+/* 追加の番はひと目で分かるようにする */
+.pipExtra {
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px var(--ace);
+}
+
+.upcoming {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+  color: var(--text-dim);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.extraTag {
+  padding: 0 5px 1px;
+  border-radius: 999px;
+  border: 1px solid var(--ace);
+  color: var(--ace);
+  font-size: 9px;
+}
+
+/* ★いま進行中の番が追加の番であること（§4.4） */
+.nowExtra {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}

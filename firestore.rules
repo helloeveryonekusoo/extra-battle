@@ -1,0 +1,104 @@
+rules_version = '2';
+
+/**
+ * Firestore のセキュリティルール（第5段階）。
+ *
+ * ★ここが唯一の防壁。クライアントは全部ユーザーの手元で動くので、
+ *   「アプリがそう作ってあるから安全」は成り立たない。書けるものはここだけで決める。
+ *
+ * ★既定は全拒否。下で明示的に許したものだけが通る。
+ */
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    /**
+     * デッキ（T47）。
+     * ★自分のデッキだけ。他人のものは読むことも書くこともできない。
+     */
+    match /users/{uid}/decks/{deckId} {
+      allow read, delete: if isOwner(uid);
+      allow create, update: if isOwner(uid)
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 60
+        && request.resource.data.cards is list
+        // ★1デッキのカード行数に上限。書き込み量で課金を膨らませないため
+        && request.resource.data.cards.size() <= 120;
+    }
+
+    /**
+     * 対戦卓（T48）。ホストのブラウザが卓を持ち、ここは中継に使う。
+     * ★席についている2人だけが読み書きできる。
+     */
+    match /rooms/{roomId} {
+      // 下の書類（盤面・要求）から親の部屋を見るときだけ get する
+      function room() {
+        return get(/databases/$(database)/documents/rooms/$(roomId)).data;
+      }
+      function seated() {
+        return signedIn() && request.auth.uid in room().members;
+      }
+
+      // 部屋そのものへの読み書きでは resource で足りる（get を1回減らす）
+      function memberHere() {
+        return signedIn() && request.auth.uid in resource.data.members;
+      }
+      function hostHere() {
+        return signedIn() && resource.data.hostUid == request.auth.uid;
+      }
+
+      /*
+       * 入室の更新。★これが「コードを知っているだけの人」に許す唯一の書き込み。
+       *   触れるのは members と guests、そのうち guests は **自分の欄だけ**。
+       *   限らないと、席の割り当てや相手の名乗りを書き換えられる。
+       */
+      function joining() {
+        let mine = request.resource.data.guests[request.auth.uid];
+        return signedIn()
+          && request.resource.data.hostUid == resource.data.hostUid
+          && request.resource.data.members.hasOnly(resource.data.members.concat([request.auth.uid]))
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['members', 'guests'])
+          && request.resource.data.guests.diff(resource.data.guests).affectedKeys()
+               .hasOnly([request.auth.uid])
+          && mine.displayName is string
+          && mine.displayName.size() <= 32
+          // デッキを持ち込むなら、デッキ保存と同じ行数の上限に収める
+          && (!('deck' in mine) || mine.deck.cards.size() <= 120);
+      }
+
+      // 部屋を作れるのはホスト自身だけ
+      allow create: if signedIn()
+        && request.resource.data.hostUid == request.auth.uid
+        && request.resource.data.members is list;
+      allow read: if memberHere();
+      // ★席の割り当てを書けるのはホストだけ。ゲストにできるのは入室だけ
+      allow update: if hostHere() || joining();
+      allow delete: if hostHere();
+
+      /** 盤面（★ホストだけが書ける。自分あてのものだけ読める） */
+      match /state/{docId} {
+        allow read: if signedIn() && request.auth.uid == docId;
+        allow write: if signedIn() && room().hostUid == request.auth.uid;
+      }
+
+      /** 操作の要求（ゲストが書き、ホストが読んで消す） */
+      match /intents/{intentId} {
+        allow read: if seated();
+        allow create: if seated()
+          && request.resource.data.uid == request.auth.uid
+          // 1件の大きさに上限。書き込み量で課金を膨らませないため
+          && request.resource.data.body is string
+          && request.resource.data.body.size() <= 20000;
+        allow delete: if signedIn() && room().hostUid == request.auth.uid;
+      }
+    }
+  }
+}

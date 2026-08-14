@@ -1,0 +1,37 @@
+/* 追加の番の告知（§4.4）。画面中央に短く出して、すぐ消える */
+.banner {
+  position: fixed;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 60;
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 14px 28px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--panel) 92%, var(--accent));
+  box-shadow: 0 8px 32px rgb(0 0 0 / 45%);
+  /* 操作の邪魔をしない */
+  pointer-events: none;
+}
+
+.title {
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.detail {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+.source {
+  color: var(--accent);
+}

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+# 絶対制約: カードデータはリポジトリに含めない
+data/cards/
+
+# デッキリストはカードデータ由来なので同じ扱いにする
+data/decks/
+
+# 対戦ログの出力先
+logs/
+
+# Firebase
+.env.local
+.firebase/

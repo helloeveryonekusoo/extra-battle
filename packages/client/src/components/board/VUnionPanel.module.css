@@ -1,0 +1,103 @@
+/* V-UNION の組み立て（T38） */
+.panel {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+}
+
+.title {
+  margin: 0 0 6px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.group + .group {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.name {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.count {
+  color: var(--text-dim);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.countOk {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.parts {
+  display: flex;
+  gap: 4px;
+  margin: 5px 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 何番がそろっているか。足りない番号は空枠で見せる */
+.part {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 26px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.partFound {
+  border: 1px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--text);
+}
+
+.partMissing {
+  border: 1px dashed var(--border);
+  color: var(--text-dim);
+  opacity: 0.5;
+}
+
+.reason {
+  margin: 4px 0;
+  color: var(--text-dim);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.assemble {
+  width: 100%;
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel-hi);
+  color: var(--text);
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.assemble:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.assemble:not(:disabled):hover {
+  border-color: var(--accent);
+}

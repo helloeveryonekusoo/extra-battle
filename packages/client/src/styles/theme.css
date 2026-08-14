@@ -1,0 +1,72 @@
+/* §6.2 カラーパレット。ダークテーマ固定（長時間プレイ前提） */
+:root {
+  --bg: #12141a;
+  --panel: #1c1f27;
+  --panel-hi: #252932;
+  --border: #2e323c;
+  --text: #e8e6e1;
+  --text-dim: #9aa0ac;
+  --accent: #4a90d9;
+  --danger: #e05a5a;
+
+  /* タイプカラー（カードの識別に使う） */
+  --grass: #5fbd58;
+  --fire: #ff6b35;
+  --water: #4a90d9;
+  --lightning: #f5c518;
+  --psychic: #a85cb8;
+  --fighting: #c0703a;
+  --darkness: #4a4a5c;
+  --metal: #8e9aa8;
+  --fairy: #e877ae;
+  --dragon: #b8952f;
+  --colorless: #c8c4bc;
+
+  /* トレーナーズ・特殊エネルギーの帯（タイプ色と衝突しない中立色） */
+  --trainer: #7a8290;
+  /* ACE SPEC の金 */
+  --ace: #C9A227;
+
+  /* 特殊状態 */
+  --poison: #A85CB8;
+  --burn: #FF6B35;
+
+  /* HPバー */
+  --hp-high: #5fbd58;
+  --hp-mid: #f5c518;
+  --hp-low: #e05a5a;
+
+  /* アニメーション（§6.10 派手にしない） */
+  --dur-move: 0.25s;
+  --dur-rotate: 0.3s;
+  --dur-count: 0.2s;
+  --dur-prize: 0.4s;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic UI', 'Noto Sans JP', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}

@@ -1,0 +1,75 @@
+/* ロック状態の常時表示（§4.1）。盤面の上に薄く敷く */
+.wrap {
+  display: grid;
+  gap: 4px;
+  margin: 2px 0;
+}
+
+/* ★消えない警告（§4.5）。トーストにしない */
+.warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 10px;
+  border: 1px solid var(--danger, #d4553d);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--panel) 84%, var(--danger, #d4553d));
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.warnMark {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--danger, #d4553d);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.mine {
+  border-color: color-mix(in srgb, var(--line) 50%, var(--accent));
+}
+
+.theirs {
+  border-color: color-mix(in srgb, var(--line) 50%, var(--danger, #d4553d));
+}
+
+.side {
+  color: var(--text-dim);
+  font-size: 10px;
+}
+
+.name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.effect {
+  color: var(--text-dim);
+}

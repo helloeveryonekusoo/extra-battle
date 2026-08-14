@@ -1,0 +1,22 @@
+{
+  "name": "pokeca-extra",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "dev": "pnpm --filter @pokeca/client dev",
+    "dev:server": "pnpm --filter @pokeca/server dev",
+    "start": "pnpm --parallel --filter @pokeca/server --filter @pokeca/client dev",
+    "build": "pnpm -r build",
+    "schema": "pnpm --filter @pokeca/server schema",
+    "coverage": "pnpm --filter @pokeca/server coverage",
+    "//": "パッケージを同時に走らせると esbuild のプロセスがメモリを取り合って落ちるので直列にする",
+    "test": "pnpm -r --workspace-concurrency=1 test",
+    "typecheck": "pnpm -r --workspace-concurrency=1 typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
+  }
+}
