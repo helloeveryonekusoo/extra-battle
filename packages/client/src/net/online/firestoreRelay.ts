@@ -63,17 +63,29 @@ function toRoomDoc(data: Record<string, unknown>): RoomDoc {
 /**
  * 部屋を作る。★ルームコードをそのまま書類IDにして、コードから引けるようにする。
  *
- * ★同じコードが空いているか必ず確かめる（T49）。
- *   10億通りあるので普通は当たらないが、当たったときに黙って
- *   人の対戦部屋を上書きするのは、確率がいくら低くても許されない。
+ * ★先に getDoc で空きを確認してはいけない。
+ *   未作成の部屋はまだメンバーを持たないため、セキュリティルール上は読めない。
+ *   まず「新規作成」として書き込み、既存コードならルールに拒否させて別コードを試す。
+ *   firestore.rules 側では createdAt の変更も禁止し、同じホストの部屋にも上書きできなくする。
  */
 export async function createRoomDoc(hostUid: string, hostName: string): Promise<string> {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     const code = newRoomCode();
-    if ((await getDoc(roomRef(code))).exists()) continue;
     const value: RoomDoc = { code, hostUid, hostName, members: [hostUid], seats: {}, guests: {} };
-    await setDoc(roomRef(code), { ...value, createdAt: serverTimestamp() });
-    return code;
+    try {
+      await setDoc(roomRef(code), { ...value, createdAt: serverTimestamp() });
+      return code;
+    } catch (cause) {
+      // 既存コードへの setDoc は update 扱いになり、ルールが permission-denied で拒否する。
+      // 通信断など別の失敗まで再試行で隠さない。
+      const errorCode =
+        typeof cause === 'object' && cause !== null && 'code' in cause
+          ? String((cause as { code: unknown }).code)
+          : '';
+      if (errorCode !== 'permission-denied' && errorCode !== 'firestore/permission-denied') {
+        throw cause;
+      }
+    }
   }
   throw new Error('部屋を作れませんでした（時間をおいてやり直してください）');
 }

@@ -54,6 +54,14 @@ service cloud.firestore {
       function hostHere() {
         return signedIn() && resource.data.hostUid == request.auth.uid;
       }
+      // ホストの通常更新でも、部屋の身元と作成時刻は変えさせない。
+      // これにより、同じホストが偶然同じコードを引いても setDoc で上書きできない。
+      function hostUpdating() {
+        return hostHere()
+          && request.resource.data.hostUid == resource.data.hostUid
+          && request.resource.data.code == resource.data.code
+          && request.resource.data.createdAt == resource.data.createdAt;
+      }
 
       /*
        * 入室の更新。★これが「コードを知っているだけの人」に許す唯一の書き込み。
@@ -80,7 +88,7 @@ service cloud.firestore {
         && request.resource.data.members is list;
       allow read: if memberHere();
       // ★席の割り当てを書けるのはホストだけ。ゲストにできるのは入室だけ
-      allow update: if hostHere() || joining();
+      allow update: if hostUpdating() || joining();
       allow delete: if hostHere();
 
       /** 盤面（★ホストだけが書ける。自分あてのものだけ読める） */
