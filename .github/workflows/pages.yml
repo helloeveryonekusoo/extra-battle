@@ -1,0 +1,67 @@
+# クライアントを GitHub Pages へ配信する（第5段階 T50）。
+#
+# ★カードデータはリポジトリに無い（絶対制約2）。
+#   だからここでは **ビルドだけ** を行い、テストは走らせない。
+#   サーバー側のテストは data/cards/*.json を読むので、この環境では必ず落ちる。
+#   テストは手元で `pnpm test` を通してから push すること。
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 配信中に次の配信を始めない（走っている途中のものは取り消す）
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 版は package.json の packageManager に合わせる
+      # （pnpm-workspace.yaml の allowBuilds: は 11 系の書き方なので、古い版では通らない）
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # tsc --noEmit も通るので、型が壊れていればここで止まる
+      - run: pnpm --filter @pokeca/client build
+        env:
+          # ★Pages はリポジトリ名の下に置かれる（/<repo>/）
+          VITE_BASE: /${{ github.event.repository.name }}/
+          # Firebase のウェブ設定。ブラウザに配る値なので秘密ではないが、
+          # リポジトリに置かずに済むよう Secrets から渡す
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: packages/client/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
