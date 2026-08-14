@@ -25,14 +25,21 @@ import { loadCardTexts } from './cardStore';
 const pool = loadCardTexts();
 const CTX: RuleContext = { cards: buildCardIndex(pool) };
 
+/*
+ * ★シェイミEXとヤレユータンは削除した（2026-08-14）。
+ *   どちらもエクストラの禁止カード（2021年1月22日から）。収録していると
+ *   デッキ検証が通ってしまい、使えないデッキを組めてしまう。
+ * ★かがやくルチャブルは「手札から出したとき」ではなかった（公式で確認）。
+ *   特性は「ビッグマッチ」で、ベンチにいるあいだ効く常時型。
+ */
 const names = [
-  // 手札から出したとき（5）
-  'クロバットV', 'カプ・テテフGX', 'シェイミEX', 'ネオラントV', 'かがやくルチャブル',
-  // 自分の番に1回（8）
+  // 手札から出したとき（3）
+  'クロバットV', 'カプ・テテフGX', 'ネオラントV',
+  // 自分の番に1回（7）
   'デデンネGX', 'かがやくゲッコウガ', 'ゾロアークGX', 'オクタン',
-  'キュワワー', 'ミュウ', 'ジラーチ', 'ヤレユータン',
-  // 常時（3）
-  'アローラベトベトン', 'ダストダス', 'ウソッキー',
+  'キュワワー', 'ミュウ', 'ジラーチ',
+  // 常時（4）
+  'アローラベトベトン', 'ダストダス', 'ウソッキー', 'かがやくルチャブル',
 ] as const;
 
 const card = (name: string): CardText => {
@@ -126,9 +133,14 @@ const BASIC = card('ゼニガメ');
 // ── 定義そのものの確認 ──────────────────
 
 describe('T34 定義', () => {
-  it('指示された16枚が揃っている', () => {
-    expect(names).toHaveLength(16);
+  it('14枚が揃っている（禁止2枚を除いた）', () => {
+    expect(names).toHaveLength(14);
     for (const name of names) expect(card(name), name).toBeTruthy();
+  });
+
+  /** ★禁止カードは収録しない。あると使えないデッキが組めてしまう */
+  it.each(['シェイミEX', 'ヤレユータン'] as const)('%s は収録しない（エクストラ禁止）', (name) => {
+    expect(pool.some((entry) => entry.name === name)).toBe(false);
   });
 
   it('特性は trigger と oncePerTurn で役割が分かれている', () => {
@@ -137,9 +149,9 @@ describe('T34 定義', () => {
     );
     const once = names.map(card).filter((c) => c.abilities?.some((a) => a.oncePerTurn));
     const passive = names.map(card).filter((c) => c.abilities?.some((a) => a.trigger === 'passive'));
-    expect(onPlay).toHaveLength(5);
-    expect(once).toHaveLength(8);
-    expect(passive).toHaveLength(3);
+    expect(onPlay).toHaveLength(3);
+    expect(once).toHaveLength(7);
+    expect(passive).toHaveLength(4);
   });
 
   it('★条件を自動で判定できない特性は ASSISTED（manual に逃がしてある）', () => {
@@ -298,44 +310,17 @@ describe('★「手札から出したとき」は自動ではたらく', () => {
     },
   );
 
-  it('シェイミEX: 手札から出すと手札が6枚になる', () => {
-    const shaymin = card('シェイミEX');
-    const table = setup([shaymin, BASIC]);
-    playFromDeck(table, table.alice, table.mine(BASIC.functionalId), 'active');
-    playFromHand(table, table.alice, table.mine(shaymin.functionalId), 'bench-0');
-    finish(table);
-    expect(hand(table, table.alice)).toBe(6);
-  });
-
-  it('★かがやくルチャブル: 相手のベンチ2匹にダメカンを1個ずつのせる', () => {
-    const lucha = card('かがやくルチャブル');
-    const fire = card('ヒトカゲ');
-    const table = setup([lucha, BASIC], [BASIC, fire, fire]);
-    playFromDeck(table, table.alice, table.mine(BASIC.functionalId), 'active');
-    playFromDeck(table, table.bob, table.theirs(BASIC.functionalId), 'active');
-    playFromDeck(table, table.bob, table.theirs(fire.functionalId, 0), 'bench-0');
-    playFromDeck(table, table.bob, table.theirs(fire.functionalId, 1), 'bench-1');
-
-    playFromHand(table, table.alice, table.mine(lucha.functionalId), 'bench-0');
-    finish(table);
-
-    const benches = table.room.rawState.players[table.bob]!.pokemon.filter(
-      (s) => s.slotId !== 'active',
-    );
-    expect(benches.reduce((sum, s) => sum + s.damageCounters, 0)).toBe(2);
-    // ★バトル場には乗らない
-    const active = table.room.rawState.players[table.bob]!.pokemon.find((s) => s.slotId === 'active');
-    expect(active?.damageCounters).toBe(0);
-  });
-
-  it('相手のベンチが空なら、何も起きずに終わる', () => {
+  /*
+   * ★かがやくルチャブルは「手札から出したとき」ではない（公式で確認して直した）。
+   *   何も起きないことを、はっきり固定しておく。
+   */
+  it('★かがやくルチャブル: 出しても何も始まらない（常時型なので）', () => {
     const lucha = card('かがやくルチャブル');
     const table = setup([lucha, BASIC], [BASIC]);
     playFromDeck(table, table.alice, table.mine(BASIC.functionalId), 'active');
     playFromDeck(table, table.bob, table.theirs(BASIC.functionalId), 'active');
 
     playFromHand(table, table.alice, table.mine(lucha.functionalId), 'bench-0');
-    finish(table);
     expect(table.room.rawState.execution).toBeNull();
   });
 });
@@ -408,34 +393,30 @@ describe('T34 自分の番に1回の特性', () => {
     expect(table.room.rawState.cards[table.mine(item.functionalId)]?.zone).toBe('hand');
   });
 
-  it('★キュワワー はなえらび: 上から3枚を見て1枚を手札、残り2枚をトラッシュ', () => {
+  /*
+   * ★公式で確認して直した（2026-08-14）。
+   *   見るのは2枚、残りは **トラッシュではなくロストゾーン**。
+   *   ロストゾーンに置くカードは戻らないので、ここを間違えると盤面が根本から変わる。
+   */
+  it('★キュワワー はなえらび: 上から2枚を見て1枚を手札、残り1枚をロストゾーンへ', () => {
     const table = withPokemon('キュワワー');
-    const top3 = cardsInZone(table.room.rawState, table.alice, 'deck')
-      .slice(0, 3)
+    const top2 = cardsInZone(table.room.rawState, table.alice, 'deck')
+      .slice(0, 2)
       .map((instance) => instance.instanceId);
 
     useAbility(table, table.id);
     const choice = table.room.rawState.execution!.pendingChoice!;
-    // ★見えるのは上から3枚だけ
-    expect(choice.candidates).toEqual(top3);
+    // ★見えるのは上から2枚だけ
+    expect(choice.candidates).toEqual(top2);
     table.room.submitIntent(table.alice, {
       type: 'resolveChoice',
       requestId: choice.requestId,
-      selected: [top3[0]!],
+      selected: [top2[0]!],
     });
     finish(table);
 
-    expect(table.room.rawState.cards[top3[0]!]?.zone).toBe('hand');
-    expect(table.room.rawState.cards[top3[1]!]?.zone).toBe('discard');
-    expect(table.room.rawState.cards[top3[2]!]?.zone).toBe('discard');
-  });
-
-  it('ヤレユータン さるぢえ: 手札を山札の下にもどす', () => {
-    const table = withPokemon('ヤレユータン');
-    const inHand = toHand(table, 3);
-    useAbility(table, table.id);
-    finish(table);
-    for (const id of inHand) expect(table.room.rawState.cards[id]?.zone).toBe('deck');
+    expect(table.room.rawState.cards[top2[0]!]?.zone).toBe('hand');
+    expect(table.room.rawState.cards[top2[1]!]?.zone).toBe('lost');
   });
 
   it.each(['ミュウ', 'ジラーチ'] as const)('%s: 条件は人に確認してもらう（ASSISTED）', (name) => {
