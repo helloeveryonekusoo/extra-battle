@@ -76,6 +76,44 @@ describe('CardFull', () => {
     expect(screen.getByText('水・闘')).toBeTruthy();
   });
 
+  /*
+   * T51: 実物のカードの配置に合わせた。
+   * ★下端の決まり文句は **ゲームのルール** であって、カードごとの文ではない。
+   *   だからカードデータには持たせず、種類から出す。
+   */
+  it('★トレーナーズは下端に決まり文句を出す', () => {
+    const supporter = sampleCardIndex.all.find((c) => c.trainerKind === 'supporter');
+    const stadium = sampleCardIndex.all.find((c) => c.trainerKind === 'stadium');
+    if (supporter) {
+      const { container, unmount } = render(<CardFull card={supporter} />);
+      expect(container.textContent).toContain('サポートは自分の番に1枚しか使えない。');
+      // 見出しは実物と同じ割り当て（左「トレーナーズ」／右に種類）
+      expect(container.textContent).toContain('トレーナーズ');
+      unmount();
+    }
+    if (stadium) {
+      const { container, unmount } = render(<CardFull card={stadium} />);
+      expect(container.textContent).toContain('別のスタジアムが出たらトラッシュする');
+      unmount();
+    }
+  });
+
+  it('★ポケモンには決まり文句を出さない（弱点・抵抗・にげるの側）', () => {
+    const { container } = render(<CardFull card={kamex} />);
+    expect(container.textContent).not.toContain('サポートは自分の番に1枚しか使えない。');
+    expect(container.textContent).not.toContain('グッズは自分の番に何枚でも使える。');
+    expect(container.textContent).toContain('にげる');
+  });
+
+  it('押せるカードにしたときだけボタンとして扱う', () => {
+    const { container, unmount } = render(<CardFull card={kamex} />);
+    expect(container.querySelector('[role="button"]')).toBeNull();
+    unmount();
+
+    render(<CardFull card={kamex} onClick={() => {}} />);
+    expect(screen.getByRole('button', { name: /カメックス/ })).toBeTruthy();
+  });
+
   it('★画像を一切使わない（絶対制約）', () => {
     for (const card of sampleCardIndex.all) {
       const { container, unmount } = render(<CardFull card={card} />);

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type WheelEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
 import {
   ENERGY_TYPES,
   validateDeck,
@@ -9,7 +9,8 @@ import {
 import { loadCardPool } from '../cards/cardPool';
 import { deleteDeckFrom, loadLibrary, saveDeckTo } from '../decks/deckLibrary';
 import { useAccount } from '../auth/useAuth';
-import { CardCompact } from '../components/card/CardCompact';
+import { CardFull } from '../components/card/CardFull';
+import { CARD_GROUPS, groupOfCard, sortForCatalog } from '../components/card/cardVisuals';
 import {
   getSelectedDeckId,
   listSavedDecks,
@@ -46,26 +47,10 @@ const TYPE_LABEL: Record<EnergyType, string> = {
   colorless: '無色',
 };
 
-const GROUPS = [
-  ['pokemon', 'ポケモン'],
-  ['item', 'グッズ'],
-  ['tool', 'ポケモンのどうぐ'],
-  ['supporter', 'サポート'],
-  ['stadium', 'スタジアム'],
-  ['energy', 'エネルギー'],
-] as const;
-
-type GroupKey = (typeof GROUPS)[number][0];
-
-function groupOf(card: CardText): GroupKey {
-  if (card.supertype === 'pokemon') return 'pokemon';
-  if (card.supertype === 'energy') return 'energy';
-  return card.trainerKind ?? 'item';
-}
-
+/* ★種類の並びと判定は cardVisuals に一本化した（カタログもデッキ欄も同じ順序で出す） */
 function matchesKind(card: CardText, kind: KindFilter): boolean {
   if (kind === 'all') return true;
-  return groupOf(card) === kind;
+  return groupOfCard(card) === kind;
 }
 
 function deckCards(counts: Readonly<Record<string, number>>) {
@@ -123,7 +108,7 @@ export function DeckBuilder() {
   const cards = pool.all;
   const filteredCards = useMemo(() => {
     const needle = query.normalize('NFKC').toLocaleLowerCase('ja');
-    return cards.filter((card) => {
+    const matched = cards.filter((card) => {
       const searchable = `${card.name} ${card.text ?? ''}`.normalize('NFKC').toLocaleLowerCase('ja');
       return (
         (!needle || searchable.includes(needle)) &&
@@ -133,16 +118,23 @@ export function DeckBuilder() {
           card.energyProvides?.includes(energyType))
       );
     });
+    // ★種類 → タイプ → 進化ライン → 進化段階 の順。名前順だと進化前後が離れる
+    return sortForCatalog(matched);
   }, [cards, energyType, kind, query]);
 
-  const entries = useMemo<DeckEntry[]>(
-    () =>
-      deckCards(counts).flatMap((line): DeckEntry[] => {
-        const card = pool.byFunctionalId.get(line.functionalId);
-        return card ? [{ card, count: line.count }] : [];
-      }),
-    [counts],
-  );
+  const entries = useMemo<DeckEntry[]>(() => {
+    const lines = deckCards(counts).flatMap((line): DeckEntry[] => {
+      const card = pool.byFunctionalId.get(line.functionalId);
+      return card ? [{ card, count: line.count }] : [];
+    });
+    // ★デッキ欄もカタログと同じ並びにする（目が同じ順序に慣れているので探しやすい）
+    const order = new Map(
+      sortForCatalog(lines.map((line) => line.card)).map((card, i) => [card.functionalId, i]),
+    );
+    return lines.sort(
+      (a, b) => (order.get(a.card.functionalId) ?? 0) - (order.get(b.card.functionalId) ?? 0),
+    );
+  }, [counts]);
   const issues = useMemo(() => validateDeck(entries), [entries]);
   const total = deckCards(counts).reduce((sum, card) => sum + card.count, 0);
   const dirty = snapshot(name, counts) !== savedSnapshot;
@@ -286,7 +278,9 @@ export function DeckBuilder() {
               <option>すべての弾（版情報なし）</option>
             </select>
           </div>
-          <div className={styles.catalogMeta}>{filteredCards.length}種類　ホイールでも枚数を変更できます</div>
+          <div className={styles.catalogMeta}>
+            {filteredCards.length}種類　カードを押すと1枚増えます
+          </div>
           <div className={styles.cardGrid}>
             {filteredCards.map((card) => {
               const count = counts[card.functionalId] ?? 0;
@@ -294,12 +288,16 @@ export function DeckBuilder() {
                 <article
                   key={card.functionalId}
                   className={`${styles.cardChoice} ${count > 0 ? styles.cardSelected : ''}`}
-                  onWheel={(event: WheelEvent) => {
-                    event.preventDefault();
-                    changeCount(card.functionalId, event.deltaY < 0 ? 1 : -1);
-                  }}
                 >
-                  <CardCompact card={card} onClick={() => changeCount(card.functionalId, 1)} />
+                  {/*
+                    ★効果はカードの中に出す（T51）。
+                      別の場所に出すと、カードを見ながら考えられない。
+                  */}
+                  <CardFull
+                    card={card}
+                    className={styles.catalogCard}
+                    onClick={() => changeCount(card.functionalId, 1)}
+                  />
                   <div className={styles.cardControls}>
                     <button aria-label={`${card.name}を1枚減らす`} onClick={() => changeCount(card.functionalId, -1)}>−</button>
                     <output aria-label={`${card.name}の枚数`}>{count}</output>
@@ -333,8 +331,8 @@ export function DeckBuilder() {
             <button disabled={!currentId} onClick={removeCurrent}>削除</button>
           </div>
           <div className={styles.deckList}>
-            {GROUPS.map(([group, label]) => {
-              const lines = entries.filter((entry) => groupOf(entry.card) === group);
+            {CARD_GROUPS.map(([group, label]) => {
+              const lines = entries.filter((entry) => groupOfCard(entry.card) === group);
               const subtotal = lines.reduce((sum, entry) => sum + entry.count, 0);
               if (lines.length === 0) return null;
               return (

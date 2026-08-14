@@ -29,6 +29,34 @@ describe('デッキ構築UI', () => {
     expect(screen.getByLabelText(`${card.name}の枚数`).textContent).toBe('0');
   }, 20000);
 
+  /*
+   * ★T51: ホイールでの枚数変更は廃止した。
+   *   一覧をスクロールしただけで枚数が動いてしまい、気づかないまま壊れることがあった。
+   */
+  it('★ホイールでは枚数が変わらない', () => {
+    const card = sampleCardIndex.all[0]!;
+    render(<DeckBuilder />);
+
+    fireEvent.change(screen.getByLabelText('カード検索'), { target: { value: card.name } });
+    const count = screen.getByLabelText(`${card.name}の枚数`);
+    expect(count.textContent).toBe('0');
+
+    fireEvent.wheel(count.closest('article')!, { deltaY: -100 });
+    fireEvent.wheel(count.closest('article')!, { deltaY: 100 });
+    expect(count.textContent).toBe('0');
+  }, 20000);
+
+  it('★カードの効果がカードの中に出る', () => {
+    const withText = sampleCardIndex.all.find(
+      (card) => card.supertype === 'trainer' && card.text,
+    )!;
+    render(<DeckBuilder />);
+
+    fireEvent.change(screen.getByLabelText('カード検索'), { target: { value: withText.name } });
+    const catalog = screen.getByLabelText('カードカタログ');
+    expect(catalog.textContent).toContain(withText.text);
+  }, 20000);
+
   it('名前と内容を保存し、保存デッキ一覧へ反映する', async () => {
     const card = sampleCardIndex.all[0]!;
     render(<DeckBuilder />);
